@@ -1,0 +1,223 @@
+<html>
+	<body style="font-family:'Open Sans'">
+		<div id="Official Page">
+			<h1>Canoe Slalom Database</h1>
+			<h2>Welcome, Official</h2>
+					<div id="database placeholder">
+						<h1>Races</h1>
+						<table id="table">
+							<tr>
+								<th>Race ID</th>
+								<th>Location</th>
+								<th>Date</th>
+								<th>Categories</th>
+								<th>Club</th>
+								<th>Official ID</th>
+							</tr>
+						</table>
+						<label>Race ID:</label>
+						<input id="IDField" type="text" placeholder="ID">
+						<button type="button" onclick="displayTable()">Display Race's</button>
+					</div>
+			
+			<div id="Request Club or Race">
+			    <br>
+				<label>New Club</label>
+				<br>
+				<label>Club Name:</label> 
+				<input id="CName" type="text" placeholder="Name">
+				<br>
+				<label>Province:</label>
+				<input id="province" type="text" placeholder="Province">
+				<br>
+				<label>Official ID:</label>
+				<input id="OIDClub"type="number" placeholder="ID">
+				<br>
+				<label>Start Date:</label>
+				<input id="SD" type="date">
+				<br>
+				<label>End Date:</label>
+				<input id="ED" type="date">
+				<button type="button" onclick="submitClub()">Submit Club</button>
+				<br>
+				<label id="ClubResponse"></label>
+				
+				
+				<br>
+				<br>
+				<label>New Race</label>
+				<br>
+				<label>Race ID:</label>
+				<input id="RID" type="number" placeholder="ID">
+				<br>
+				<label>Location:</label>
+				<input id="Location" type="text" placeholder="Location">
+				<br>
+				<label>Date:</label>
+				<input id="Date" type="date">
+				<br>
+				<label>Categories:</label>
+				<input id="Cat" type="text" placeholder="Category"> 
+				<br>
+				<label>Club:</label>
+				<input id ="ClubName" type="text" placeholder="Club Name">
+				<br>
+				<label>Official ID:</label>
+				<input id="OIDRace" type="number" placeholder="ID">
+				<button type="button" onclick="submitRace()">Create Race</button>
+				<br>
+				<label id="RaceResponse"></label>
+			</div>
+		</div>
+			<script>
+			
+			function submitRace(){
+				
+				var rid = document.getElementById("RID").value;
+				var loc = document.getElementById("Location").value;
+				var date = document.getElementById("Date").value;
+				var cat = document.getElementById("Cat").value;
+				var club = document.getElementById("ClubName").value;
+				var oid = document.getElementById("OIDRace").value;
+				var url = 'http://localhost/project/api/race/addrace.php'
+				var param = 'RID='+rid+'&Location='+ loc;
+				param += '&RaceDate=' + date + '&Categories=' + cat + '&ClubName=' + club + '&OID=' + oid;
+				
+				//alert(url);
+				httpPostAsync(url,handleRaceSubmitResponse,param);
+			}
+			
+			function handleRaceSubmitResponse(data){
+				//alert("data: " + data);
+				var label = document.getElementById("RaceResponse");
+				
+				if (data.includes("Error")){
+					label.innerHTML = "An Error occured while submitting your race please check your input";
+				}else{
+					label.innerHTML = "Race Succesfully Added";
+				}
+			}
+			
+			
+			function submitClub(){
+				
+				var name = document.getElementById("CName").value;
+				var prov = document.getElementById("province").value;
+				var oid = document.getElementById("OIDClub").value;
+				var sd = document.getElementById("SD").value;
+				var ed = document.getElementById("ED").value;
+				var url = 'http://localhost/project/api/club/addclub.php';
+				var param = 'ClubName=' + name +'&Province='+ prov;
+				if (oid != "") {
+					param += '&OID=' + oid + '&StartDate=' + sd + '&EndDate=' + ed;
+				}
+				httpPostAsync(url,handleClubsubmitResponse,param);
+			}
+			
+			function handleClubsubmitResponse(data){
+				var label = document.getElementById("ClubResponse");
+				//alert(data);
+				if (data.includes("Error")){
+					label.innerHTML = "An Error occured while submitting your club please check your input";
+				}else{
+					label.innerHTML = "Club Succesfully Added";
+				}
+			}
+	  
+			function modifyTable(data){
+				//alert(data);
+				var index = data.indexOf("[");
+				var data2 = data.slice(index);
+				//alert(data2);
+				var obj = JSON.parse(data2);
+				//alert(obj[0].Location);
+				var table = document.getElementById("table");
+				while(table.rows.length > 1){
+					table.deleteRow(1);
+				}
+				for (i = 0; i < obj.length; i++){
+					table.insertRow(i + 1);
+					var cell = table.rows[i + 1].insertCell(0);
+					cell.innerHTML = obj[i].RID;
+					var cell = table.rows[i + 1].insertCell(1);
+					cell.innerHTML = obj[i].Location;
+					cell = table.rows[i + 1].insertCell(2);
+					cell.innerHTML = obj[i].RaceDate;
+					cell = table.rows[i + 1].insertCell(3);
+					cell.innerHTML = obj[i].Categories;
+					cell = table.rows[i + 1].insertCell(4);
+					cell.innerHTML = obj[i].ClubName;
+					cell = table.rows[i + 1].insertCell(5);
+					cell.innerHTML = obj[i].OID;
+			
+				}
+		
+			}
+	  
+			function httpGetAsync(theUrl, callback)
+				{
+				
+				var xmlHttp = new XMLHttpRequest();
+				try{
+					xmlHttp.onreadystatechange = function() { 
+					xmlHttp.onerror = displayError;
+		
+					if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+						callback(xmlHttp.responseText);
+					}
+					xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+					xmlHttp.send(null);
+				} catch(err) {
+					alert("Error: " + err);
+				}
+			}
+	  
+			function display(message){
+				alert(message);
+			}
+			function displayError(){
+				alert("An Error Occured ");
+			}
+	  
+			function displayTable(){
+				var id = document.getElementById("IDField");
+				if (id.value == ""){
+					var url = 'http://localhost/project/api/race/getraces.php';
+				}else{
+					var url = 'http://localhost/project/api/race/getrace.php?RID=' + id.value;
+					//alert(id.value);
+				}
+				httpGetAsync(url,modifyTable);
+		
+
+			}
+			
+			function httpPostAsync(theUrl,callback,data){
+				
+				var xmlHttp = new XMLHttpRequest();
+				try{
+					//xmlHttp.onerror = displayError;
+					
+					xmlHttp.onreadystatechange = function() { 
+						//alert(xmlHttp.status);
+						if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+							callback(xmlHttp.responseText);
+						//alert(xmlHttp.status);
+					}
+					
+					xmlHttp.open("POST", theUrl, true); // true for asynchronous 
+					xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+					
+					xmlHttp.send(data);
+					
+					
+				} catch(err) {
+					alert("Error: " + err);
+				}
+			
+			}
+			
+			
+			</script>
+	</body>
+</html>

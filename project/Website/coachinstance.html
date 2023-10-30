@@ -1,0 +1,154 @@
+<html>
+	<body style="font-family:'Open Sans'">
+		<div id="Coach Page">
+			<h1>Canoe Slalom Database</h1>
+			<h2>Welcome, Coach</h2>
+					<div id="database placeholder">
+						<h1>Races</h1>
+						<table id="table">
+							<tr>
+								<th>Race ID</th>
+								<th>Location</th>
+								<th>Date</th>
+								<th>Categories</th>
+								<th>Club</th>
+								<th>Official ID</th>
+							</tr>
+						</table>
+						<label>Race ID:</label>
+						<input id="IDField" type="text" placeholder="ID">
+						<button type="button" onclick="displayTable()">Display Race's</button>
+					</div>
+			
+			<div id="Request Categories">
+				<br>
+				<label>Submit a new athlete you're coaching</label>
+				<br>
+				<label>Athlete ID:</label>
+				<input id="AID" type="number" placeholder="ID">
+				<br>
+				<label>Coach ID:</label>
+				<input id="CID" type="number" placeholder="ID">
+				<button type="button" onclick="submitCoaches()">Submit Coaches</button>
+			</div>
+		</div>
+			<script>
+	  
+			function submitCoaches(){
+			
+				var AID = document.getElementById("AID").value;
+				var CID = document.getElementById("CID").value;
+				
+				var url = "http://localhost/project/api/coaches/addcoaches.php";
+				var param = 'AID=' + AID + '&CID=' + CID;
+				alert(param);
+				httpPostAsync(url,response,param);
+				
+			
+			
+			}
+			
+			function response(data){
+				if (data.includes("Error")){
+					alert("Action Failed");
+					alert(data);
+				}else{
+					alert("Action Complete");
+				}
+			}
+	  
+			function modifyTable(data){
+				//alert(data);
+				var index = data.indexOf("[");
+				var data2 = data.slice(index);
+				//alert(data2);
+				var obj = JSON.parse(data2);
+				//alert(obj[0].Location);
+				var table = document.getElementById("table");
+				while(table.rows.length > 1){
+					table.deleteRow(1);
+				}
+				for (i = 0; i < obj.length; i++){
+					table.insertRow(i + 1);
+					var cell = table.rows[i + 1].insertCell(0);
+					cell.innerHTML = obj[i].RID;
+					var cell = table.rows[i + 1].insertCell(1);
+					cell.innerHTML = obj[i].Location;
+					cell = table.rows[i + 1].insertCell(2);
+					cell.innerHTML = obj[i].RaceDate;
+					cell = table.rows[i + 1].insertCell(3);
+					cell.innerHTML = obj[i].Categories;
+					cell = table.rows[i + 1].insertCell(4);
+					cell.innerHTML = obj[i].ClubName;
+					cell = table.rows[i + 1].insertCell(5);
+					cell.innerHTML = obj[i].OID;
+			
+				}
+		
+			}
+			
+			function httpPostAsync(theUrl,callback,data){
+				
+				var xmlHttp = new XMLHttpRequest();
+				try{
+					//xmlHttp.onerror = displayError;
+					
+					xmlHttp.onreadystatechange = function() { 
+						//alert(xmlHttp.status);
+						if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+							callback(xmlHttp.responseText);
+						//alert(xmlHttp.status);
+					}
+					
+					xmlHttp.open("POST", theUrl, true); // true for asynchronous 
+					xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+					
+					xmlHttp.send(data);
+					
+					
+				} catch(err) {
+					alert("Error: " + err);
+				}
+			
+			}
+			
+	  
+			function httpGetAsync(theUrl, callback)
+				{
+				var xmlHttp = new XMLHttpRequest();
+				try{
+					xmlHttp.onreadystatechange = function() { 
+					xmlHttp.onerror = displayError;
+		
+					if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+						callback(xmlHttp.responseText);
+					}
+					xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+					xmlHttp.send(null);
+				} catch(err) {
+					alert("Error: " + err);
+				}
+			}
+	  
+			function display(message){
+				alert(message);
+			}
+			function displayError(){
+				alert("An Error Occured ");
+			}
+	  
+			function displayTable(){
+				var id = document.getElementById("IDField");
+				if (id.value == ""){
+					var url = 'http://localhost/project/api/race/getraces.php';
+				}else{
+					var url = 'http://localhost/project/api/race/getrace.php?RID=' + id.value;
+					//alert(id.value);
+				}
+				httpGetAsync(url,modifyTable);
+		
+
+			}
+			</script>
+	</body>
+</html>

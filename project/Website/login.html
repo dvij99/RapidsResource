@@ -1,0 +1,89 @@
+
+
+<html>
+	<body>
+		<div id="Headings" style="font-family:'Open Sans'">
+			<h1>Canoe Slalom Database</h1>
+			<h2>Log into your account</h2>
+		</div>
+		<div id="Username Area" style="font-family:'Open Sans'">
+			ID
+			<form>
+				<input id="user" type="text" placeholder="Username">
+			</form>
+		<div id="Password">
+			Password
+			<form>
+				<input id="pwd" type="password" placeholder="Password">
+				<h1></h1>
+				<button type="button" onclick="login()">Login</button>
+			</form>
+		</div>
+	</div>
+	
+	<script>
+	function login(){
+			
+			var user = document.getElementById("user").value;
+			
+			var pwd = document.getElementById("pwd").value;
+			//alert(pwd);
+			
+			var url = "http://localhost/project/api/Login/login.php"
+			var param = 'user=' + user+ '&password=' + pwd;
+			//alert(param);
+			httpPostAsync(url,displayResponse,param);
+		}
+	
+		function displayResponse(data){
+			if(!data.includes("Error")){
+				alert("Registration Complete");
+			}
+			alert(data);
+		}
+	
+	function displayResponse(data){
+			//alert(data);
+			if(data.includes("true")){
+				var location = data.indexOf("true");
+				var cookie = data.substring(location + 4);
+				var d = new Date();
+				d.setTime(d.getTime() + (24*60*60*1000));
+				//alert(cookie);
+				document.cookie = "auth=" + cookie +";expires=" + d.toUTCString() +";path=/";
+				alert("Login Complete");
+				window.location = "http://localhost/project/Website/admininstance.html";
+			}else{
+				alert("login Failed");
+			}
+		}
+			function httpPostAsync(theUrl,callback,data){
+				
+				var xmlHttp = new XMLHttpRequest();
+				try{
+					//xmlHttp.onerror = displayError;
+					
+					xmlHttp.onreadystatechange = function() { 
+						//alert(xmlHttp.status);
+						if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+							callback(xmlHttp.responseText);
+						//alert(xmlHttp.status);
+					}
+					
+					xmlHttp.open("POST", theUrl, true); // true for asynchronous 
+					xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+					
+					xmlHttp.send(data);
+					
+					
+				} catch(err) {
+					alert("Error: " + err);
+				}
+			
+			}
+	
+	</script>
+	
+	
+	</body>
+</html>

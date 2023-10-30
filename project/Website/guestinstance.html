@@ -1,0 +1,106 @@
+
+
+
+
+<html>
+<head>
+
+
+	<body style="font-family:'Open Sans'">
+		<div id="Guest Page">
+			<h1>Canoe Slalom Database</h1>
+			<h2>Welcome, Guest</h2>
+					<div id="database placeholder">
+			<h1>Races</h1>
+			<table id="table">
+				<tr>
+					<th>Race ID</th>
+					<th>Location</th>
+					<th>Date</th>
+					<th>Categories</th>
+					<th>Club</th>
+					<th>Official ID</th>
+				</tr>
+			</table>
+			<label>Race ID:</label>
+			<input id="IDField" type="text" placeholder="ID">
+			<button type="button" onclick="displayTable()">Display Race's</button>
+			<br>
+			<a href="http://localhost/project/Website/login.html">Login Page</a>
+			<br>
+			<a href="http://localhost/project/Website/register.html">Registration Page</a>
+		</div>
+	  </div>
+	  
+	  <script>
+	  
+	  function modifyTable(data){
+		//alert(data);
+		var index = data.indexOf("[");
+		var data2 = data.slice(index);
+		//alert(data2);
+		var obj = JSON.parse(data2);
+		//alert(obj[0].Location);
+		var table = document.getElementById("table");
+		while(table.rows.length > 1){
+			table.deleteRow(1);
+		}
+		for (i = 0; i < obj.length; i++){
+			table.insertRow(i + 1);
+			var cell = table.rows[i + 1].insertCell(0);
+			cell.innerHTML = obj[i].RID;
+			var cell = table.rows[i + 1].insertCell(1);
+			cell.innerHTML = obj[i].Location;
+			cell = table.rows[i + 1].insertCell(2);
+			cell.innerHTML = obj[i].RaceDate;
+			cell = table.rows[i + 1].insertCell(3);
+			cell.innerHTML = obj[i].Categories;
+			cell = table.rows[i + 1].insertCell(4);
+			cell.innerHTML = obj[i].ClubName;
+			cell = table.rows[i + 1].insertCell(5);
+			cell.innerHTML = obj[i].OID;
+			
+		}
+		
+	  }
+	  
+	  function httpGetAsync(theUrl, callback)
+		{
+		var xmlHttp = new XMLHttpRequest();
+		try{
+			xmlHttp.onreadystatechange = function() { 
+			xmlHttp.onerror = displayError;
+		
+			if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+				callback(xmlHttp.responseText);
+			}
+			xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+			xmlHttp.send(null);
+		} catch(err) {
+			alert("Error: " + err);
+		}
+	  }
+	  
+	  function display(message){
+		alert(message);
+	  }
+	  function displayError(){
+		alert("An Error Occured ");
+	  }
+	  
+	  function displayTable(){
+		var id = document.getElementById("IDField");
+		if (id.value == ""){
+			var url = 'http://localhost/project/api/race/getraces.php';
+		}else{
+			var url = 'http://localhost/project/api/race/getrace.php?RID=' + id.value;
+			//alert(id.value);
+		}
+		httpGetAsync(url,modifyTable);
+		
+
+	  }
+	  </script>
+	</body>
+</html>
+

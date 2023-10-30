@@ -1,0 +1,368 @@
+<html>
+	<body style="font-family:'Open Sans'">
+		<div id="Admin Page">
+			<h1>Canoe Slalom Database</h1>
+			<h2>Welcome, Administrator</h2>
+			<form action="http://localhost/project/Website/officialinstance.html">
+			    <input  type="submit" value="Go To Official">
+			</form>
+			<form action="http://localhost/project/Website/coachinstance.html">
+			    <input  type="submit" value="Go To Coach">
+			</form>
+			<form action="http://localhost/project/Website/athleteinstance.html">
+			    <input  type="submit" value="Go To Athlete">
+			</form>
+			<form action="http://localhost/project/Website/guestinstance.html">
+			    <input  type="submit" value="Go To Guest">
+			</form>
+					<div id="database placeholder">
+			<h1>Races</h1>
+			<table id="table">
+				<tr>
+					<th>Race ID</th>
+					<th>Location</th>
+					<th>Date</th>
+					<th>Categories</th>
+					<th>Club</th>
+					<th>Official ID</th>
+				</tr>
+			</table>
+			<label>Race ID:</label>
+			<input id="IDField" type="text" placeholder="ID">
+			<button type="button" onclick="displayTable()">Display Race's</button>
+		</div>
+					</div>
+					<div id="Add New Things">
+					<br>
+			        <label>Person Fields(Required For All)</label>
+					<br>
+						<label>ID:</label>
+						<input id="PID" type="number" placeholder="ID">
+						<br>
+						<label>First Name:</label>
+						<input id="PFName" type="text" placeholder=" First Name">
+						<br>
+						<label>Last Name:</label>
+						<input id="PLName" type="text" placeholder="Last Name">
+						<br>
+						<label>Date of Birth:</label>
+						<input id="PBDate" type="date">
+						<br>
+						<label>Club Name:</label>
+						<input id="PClubName" type="text" placeholder="Club Name">
+						<br>
+						<label>Start Date:</label>
+						<input id="PSDate" type="date">
+						<br>
+						<label>End Date:</label>
+						<input id="PEDate" type="date">
+						
+					<br>	
+					<br>
+					<label>New Athlete</label>
+						<br>
+						<label>City:</label>
+						<input id="City" type="text" placeholder="City">
+						<br>
+						<label>Province:</label>
+						<input id="Province" type="text" placeholder="Province">
+						<button type="button" onclick="submitAthlete()">Add Athlete</button>
+						<label id="AResponse"></label>
+					
+					<br>
+					<br>
+					<label>New Coach</label>
+						<br>
+						<label>Certificate:</label>
+						<input id="CCert" type="text" placeholder="Certificate">		
+						<button type="button" onclick="submitCoach()">Add Coach</button>
+						<label id="CResponse"></label>
+					
+					<br>
+					<br>
+					<label>New Judge</label>
+						<br>
+						<label>Certification:</label>
+						<input type="text" placeholder="Certification">
+						<button type="button" onclick="submitJudge()">Add Judge</button>
+						<label id="JResponse"></label>
+							
+					<br>
+					<br>
+					<label>New Official</label>
+						<br>
+						<button type="button" onclick="submitOfficial()">Add Official</button>
+						<label id="OResponse"></label>
+						<br>
+						
+						</div>
+						<br>
+						<div id="Remove Things">
+						    <label>Remove A Selected ID:</label>
+							<input id="RemoveId" type="number" placeholder="ID">
+							<br>
+								<button type="button" onclick="removeAthlete()">Remove As Athlete</button>
+								<button type="button" onclick="removeCoach()">Remove As Coach</button>
+								<button type="button" onclick="removeJudge()">Remove As Judge</button>
+								<button type="button" onclick="removeOfficial()">Remove As Official</button>
+								<label id="DelResponse"></label>
+						</div>
+						
+						
+		<script>
+		
+		function removeOfficial(){
+			var id = document.getElementById("RemoveId").value;
+			
+			var url = 'http://localhost/project/api/Official/deleteOfficial.php';
+			
+			url += '?OID=' + id;
+			
+			httpGetAsync(url,deleteResponse);
+		}
+		
+		function removeJudge(){
+			var id = document.getElementById("RemoveId").value;
+			
+			var url = 'http://localhost/project/api/judge/deletejudge.php';
+			
+			url += '?JID=' + id;
+			
+			httpGetAsync(url,deleteResponse);
+		}
+		
+		function removeCoach(){
+			var id = document.getElementById("RemoveId").value;
+			
+			var url = 'http://localhost/project/api/coach/deletecoach.php';
+			
+			url += '?CID=' + id;
+			
+			httpGetAsync(url,deleteResponse);
+		}
+		
+		function removeAthlete(){
+			var id = document.getElementById("RemoveId").value;
+			
+			var url = 'http://localhost/project/api/athlete/deleteathlete.php';
+			
+			url += '?AID=' + id;
+			
+			httpGetAsync(url,deleteResponse);
+		}
+		
+		function deleteResponse(data){
+			var l = document.getElementById("DelResponse");
+			if (data.includes("Error")){
+				l.innerHTML = "An Error Occured";
+			}else{
+				l.innerHTML = "Remove Successful";
+			}
+		}
+		
+		function submitOfficial(){
+			var id = document.getElementById("PID").value;
+			var fname = document.getElementById("PFName").value;
+			var lname = document.getElementById("PLName").value;
+			var dob = document.getElementById("PBDate").value;
+			var cname = document.getElementById("PClubName").value;
+			var sd = document.getElementById("PSDate").value;
+			var ed = document.getElementById("PEDate").value;
+			
+			var url = 'http://localhost/project/api/official/addofficial.php';
+			var param = 'OID=' + id + '&FirstName=' + fname;
+			param += '&LastName=' + lname + '&DoB=' + dob + '&ClubName=' +  cname + '&StartDate=' + sd + '&EndDate=' + ed;
+			//alert(url);
+			httpPostAsync(url,officialResponse,param);
+		}
+		
+		function officialResponse(data){
+			var l = document.getElementById("OResponse");
+			if (data.includes("Error")){
+				l.innerHTML = "An Error Occured";
+			}else{
+				l.innerHTML = "Official Added";
+			}
+		
+		}
+		
+		function submitJudge(){
+			var id = document.getElementById("PID").value;
+			var fname = document.getElementById("PFName").value;
+			var lname = document.getElementById("PLName").value;
+			var dob = document.getElementById("PBDate").value;
+			var cname = document.getElementById("PClubName").value;
+			var sd = document.getElementById("PSDate").value;
+			var ed = document.getElementById("PEDate").value;
+		
+			var cert = document.getElementById("CCert");
+			
+			var url = 'http://localhost/project/api/judge/addjudge.php';
+			var param = 'JID=' + id + '&Certification=' + cert + '&FirstName=' + fname;
+			param += '&LastName=' + lname + '&DoB=' + dob + '&ClubName=' +  cname + '&StartDate=' + sd + '&EndDate=' + ed;
+			//alert(url);
+			httpPostAsync(url,judgeResponse,param);
+		
+		}
+		
+		function judgeResponse(data){
+			var l = document.getElementById("JResponse");
+			if (data.includes("Error")){
+				l.innerHTML = "An Error Occured";
+			}else{
+				l.innerHTML = "Judge Added";
+			}
+		}
+		
+		function submitCoach(){
+			var id = document.getElementById("PID").value;
+			var fname = document.getElementById("PFName").value;
+			var lname = document.getElementById("PLName").value;
+			var dob = document.getElementById("PBDate").value;
+			var cname = document.getElementById("PClubName").value;
+			var sd = document.getElementById("PSDate").value;
+			var ed = document.getElementById("PEDate").value;
+		
+			var cert = document.getElementById("CCert");
+			
+			var url = 'http://localhost/project/api/coach/addcoach.php';
+			var param = 'CID=' + id + '&Certification=' + cert + '&FirstName=' + fname;
+			param += '&LastName=' + lname + '&DoB=' + dob + '&ClubName=' +  cname + '&StartDate=' + sd + '&EndDate=' + ed;
+			//alert(url);
+			httpPostAsync(url,coachResponse,param);
+			
+		}
+		
+		function coachResponse(data){
+			var l = document.getElementById("CResponse");
+			if (data.includes("Error")){
+				l.innerHTML = "An Error Occured";
+			}else{
+				l.innerHTML = "Coach Added";
+			}
+		}
+		
+		function submitAthlete(){
+			//alert("here");
+			var id = document.getElementById("PID").value;
+			var fname = document.getElementById("PFName").value;
+			var lname = document.getElementById("PLName").value;
+			var dob = document.getElementById("PBDate").value;
+			var cname = document.getElementById("PClubName").value;
+			var sd = document.getElementById("PSDate").value;
+			var ed = document.getElementById("PEDate").value;
+			
+			var city = document.getElementById("City").value;
+			var prov = document.getElementById("Province").value;
+			
+			var url = 'http://localhost/project/api/athlete/addathlete.php';
+			var param = 'AID=' + id + '&City=' + city + '&Province=' + prov + '&FirstName=' + fname;
+			param += '&LastName=' + lname + '&DoB=' + dob + '&ClubName=' +  cname + '&StartDate=' + sd + '&EndDate=' + ed;
+			//alert(url);
+			httpPostAsync(url,athleteResponse,param);
+			
+		}
+		
+		function athleteResponse(data){
+			
+			var l = document.getElementById("AResponse");
+			if (data.includes("Error")){
+				l.innerHTML = "An Error Occured";
+			}else{
+				l.innerHTML = "Athlete Added";
+			}
+		}
+		
+		function modifyTable(data){
+				//alert(data);
+				var index = data.indexOf("[");
+				var data2 = data.slice(index);
+				//alert(data2);
+				var obj = JSON.parse(data2);
+				//alert(obj[0].Location);
+				var table = document.getElementById("table");
+				while(table.rows.length > 1){
+					table.deleteRow(1);
+				}
+				for (i = 0; i < obj.length; i++){
+					table.insertRow(i + 1);
+					var cell = table.rows[i + 1].insertCell(0);
+					cell.innerHTML = obj[i].RID;
+					var cell = table.rows[i + 1].insertCell(1);
+					cell.innerHTML = obj[i].Location;
+					cell = table.rows[i + 1].insertCell(2);
+					cell.innerHTML = obj[i].RaceDate;
+					cell = table.rows[i + 1].insertCell(3);
+					cell.innerHTML = obj[i].Categories;
+					cell = table.rows[i + 1].insertCell(4);
+					cell.innerHTML = obj[i].ClubName;
+					cell = table.rows[i + 1].insertCell(5);
+					cell.innerHTML = obj[i].OID;
+			
+				}
+		
+			}		
+		function httpGetAsync(theUrl, callback)
+				{
+				var xmlHttp = new XMLHttpRequest();
+				try{
+					xmlHttp.onreadystatechange = function() { 
+					xmlHttp.onerror = displayError;
+		
+					if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+						callback(xmlHttp.responseText);
+					}
+					xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+					xmlHttp.send(null);
+				} catch(err) {
+					alert("Error: " + err);
+				}
+			}
+	  
+			function display(message){
+				alert(message);
+			}
+			function displayError(){
+				alert("An Error Occured ");
+			}
+	  
+			function displayTable(){
+				var id = document.getElementById("IDField");
+				if (id.value == ""){
+					var url = 'http://localhost/project/api/race/getraces.php';
+				}else{
+					var url = 'http://localhost/project/api/race/getrace.php?RID=' + id.value;
+					//alert(id.value);
+				}
+				httpGetAsync(url,modifyTable);
+		
+
+			}
+			
+			function httpPostAsync(theUrl,callback,data){
+				
+				var xmlHttp = new XMLHttpRequest();
+				try{
+					//xmlHttp.onerror = displayError;
+					
+					xmlHttp.onreadystatechange = function() { 
+						//alert(xmlHttp.status);
+						if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+							callback(xmlHttp.responseText);
+						//alert(xmlHttp.status);
+					}
+					
+					xmlHttp.open("POST", theUrl, true); // true for asynchronous 
+					xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+					
+					xmlHttp.send(data);
+					
+					
+				} catch(err) {
+					alert("Error: " + err);
+				}
+			
+			}
+			</script>
+	</body>
+</html>

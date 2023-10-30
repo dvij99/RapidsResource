@@ -1,0 +1,69 @@
+
+
+<html>
+	<body>
+		<div id="Headings" style="font-family:'Open Sans'">
+			<h1>Canoe Slalom Database</h1>
+			<h2>Create an account</h2>
+		</div>
+		<div id="Username Area" style="font-family:'Open Sans'">
+			Username
+			<form>
+				<input id="user" type="text" placeholder="Username">
+			</form>
+		<div id="Password">
+			Password
+			<form>
+				<input id="pwd" type="password" placeholder="Password">
+				<h1></h1>
+				<button type="button" onclick="register()">Register</button>
+			</form>
+		</div>
+	</div>
+	
+	<script>
+	
+		function register(){
+			var user = document.getElementById("user").value;
+			var pwd = document.getElementById("pwd").value;
+			
+			
+			var url = "http://localhost/project/api/login/register.php"
+			
+			var param = 'user=' + user+ '&password=' + pwd;
+			httpPostAsync(url,displayResponse,param);
+			
+		}
+	
+		function displayResponse(data){
+			if(!data.includes("Error")){
+				alert("Registration Complete");
+				window.location = "http://localhost/project/Website/login.html";
+			}
+		}
+			function httpPostAsync(theUrl,callback,data){
+				var xmlHttp = new XMLHttpRequest();
+				try{
+					//xmlHttp.onerror = displayError;
+					
+					xmlHttp.onreadystatechange = function() { 
+						if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+							//alert(xmlHttp.responseText);
+							callback(xmlHttp.responseText);
+					}
+					
+					xmlHttp.open("POST", theUrl, true); // true for asynchronous 
+					xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+					xmlHttp.send(data);
+				} catch(err) {
+					alert("Error: " + err);
+				}
+			
+			}
+	
+	
+	</script>
+	
+	
+	</body>
+</html>
